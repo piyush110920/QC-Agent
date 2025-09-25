@@ -9,7 +9,7 @@ export const config = {
 export default async function handler(req, res) {
   try {
     // IMPORTANT: Replace this with your actual n8n webhook URL
-    const n8nWebhookUrl = 'YOUR_N8N_WEBHOOK_URL_HERE';
+    const n8nWebhookUrl = 'http://ai.senselive.io:5678/webhook-test/senselive-qc-agent';
 
     // 1. Read the incoming request body from the stream
     const chunks = [];
