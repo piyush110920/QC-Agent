@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quality Certificate Agent</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Step 1: Upload Form -->
+      <div id="upload-container">
+        <h1>Upload Product Information</h1>
+        <form id="upload-form">
+          <div class="form-group">
+            <label for="quality-cert">Quality Certificate Photo</label>
+            <input
+              type="file"
+              id="quality-cert"
+              name="qualityCertificate"
+              accept="image/*"
+              required
+            />
+            <small>You can use your camera or upload a file.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="product-photo">Product Photo</label>
+            <input
+              type="file"
+              id="product-photo"
+              name="productPhoto"
+              accept="image/*"
+              required
+            />
+            <small>You can use your camera or upload a file.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="invoice-pdf">Invoice PDF</label>
+            <input
+              type="file"
+              id="invoice-pdf"
+              name="invoicePdf"
+              accept=".pdf"
+              required
+            />
+          </div>
+
+          <button type="submit" id="submit-btn">Upload and Save</button>
+          <div id="loading-indicator" class="hidden">
+            Uploading and processing...
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 2: Preview & Edit Form (Initially Hidden) -->
+      <div id="preview-container" class="hidden">
+        <h2>Preview and Edit Data</h2>
+        <p>
+          Review the extracted data below. Make corrections if needed and then
+          proceed.
+        </p>
+        <form id="preview-form">
+          <!-- Example fields. Add more based on what your n8n workflow returns -->
+          <div class="form-group">
+            <label for="preview-product-name">Product Name</label>
+            <input type="text" id="preview-product-name" name="productName" />
+          </div>
+          <div class="form-group">
+            <label for="preview-sku">SKU</label>
+            <input type="text" id="preview-sku" name="sku" />
+          </div>
+          <div class="form-group">
+            <label for="preview-invoice-number">Invoice Number</label>
+            <input
+              type="text"
+              id="preview-invoice-number"
+              name="invoiceNumber"
+            />
+          </div>
+
+          <!-- Buttons for the preview form -->
+          <div class="button-group">
+            <button type="button" id="proceed-btn">Proceed</button>
+            <button type="submit" id="update-btn" class="hidden">
+              Update
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
