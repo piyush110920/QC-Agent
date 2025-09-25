@@ -113,10 +113,10 @@
       buttonText.textContent = 'Uploading...';
 
       const formData = new FormData();
-      formData.append("qualityCertificate", document.getElementById("qualityCert").files[0]);
-      formData.append("productPhoto", document.getElementById("productPhoto").files[0]);
-      formData.append("invoicePdf", document.getElementById("invoicePdf").files[0]);
-      formData.append("action", "uploadAndSave");
+      formData.append("QA", document.getElementById("qualityCert").files[0]);
+      formData.append("PD", document.getElementById("productPhoto").files[0]);
+      formData.append("IV", document.getElementById("invoicePdf").files[0]);
+      formData.append("action", "uploadSave");
 
       try {
         const res = await fetch(webhookUrl, { method: "POST", body: formData });
