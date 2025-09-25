@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const N8N_WEBHOOK_URL = 'http://ai.senselive.io:5678/webhook-test/senselive-qc-agent'; // IMPORTANT: Replace with your n8n webhook URL
+const N8N_WEBHOOK_URL = '/api/upload'; // Use the local proxy endpoint
 
 // --- ELEMENT SELECTORS ---
 const uploadContainer = document.querySelector('#upload-container');
