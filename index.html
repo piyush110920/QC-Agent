@@ -1,96 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quality Certificate Agent</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="app">
-      <!-- Step 1: Upload Form -->
-      <div id="upload-container">
-        <h1>Upload Product Information</h1>
-        <form id="upload-form">
-          <div class="form-group">
-            <label for="quality-cert">Quality Certificate Photo</label>
-            <input
-              type="file"
-              id="quality-cert"
-              name="qualityCertificate"
-              accept="image/*"
-              required
-            />
-            <small>You can use your camera or upload a file.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="product-photo">Product Photo</label>
-            <input
-              type="file"
-              id="product-photo"
-              name="productPhoto"
-              accept="image/*"
-              required
-            />
-            <small>You can use your camera or upload a file.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="invoice-pdf">Invoice PDF</label>
-            <input
-              type="file"
-              id="invoice-pdf"
-              name="invoicePdf"
-              accept=".pdf"
-              required
-            />
-          </div>
-
-          <button type="submit" id="submit-btn">Upload and Save</button>
-          <div id="loading-indicator" class="hidden">
-            Uploading and processing...
-          </div>
-        </form>
-      </div>
-
-      <!-- Step 2: Preview & Edit Form (Initially Hidden) -->
-      <div id="preview-container" class="hidden">
-        <h2>Preview and Edit Data</h2>
-        <p>
-          Review the extracted data below. Make corrections if needed and then
-          proceed.
-        </p>
-        <form id="preview-form">
-          <!-- Example fields. Add more based on what your n8n workflow returns -->
-          <div class="form-group">
-            <label for="preview-product-name">Product Name</label>
-            <input type="text" id="preview-product-name" name="productName" />
-          </div>
-          <div class="form-group">
-            <label for="preview-sku">SKU</label>
-            <input type="text" id="preview-sku" name="sku" />
-          </div>
-          <div class="form-group">
-            <label for="preview-invoice-number">Invoice Number</label>
-            <input
-              type="text"
-              id="preview-invoice-number"
-              name="invoiceNumber"
-            />
-          </div>
-
-          <!-- Buttons for the preview form -->
-          <div class="button-group">
-            <button type="button" id="proceed-btn">Proceed</button>
-            <button type="submit" id="update-btn" class="hidden">
-              Update
-            </button>
-          </div>
-        </form>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Data Uploader</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .transition-all-colors {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    }
+    .file-preview {
+      display: inline-block;
+      margin-top: 8px;
+      font-style: italic;
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 p-6 min-h-screen flex items-center justify-center font-sans">
+  <div class="max-w-4xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 mb-2 drop-shadow-md tracking-tight">
+        Product Data Hub
+      </h1>
+      <p class="text-xl sm:text-2xl font-semibold text-gray-600 mt-2">
+        Upload & Verify Product Information
+      </p>
     </div>
 
-    <script src="main.js"></script>
-  </body>
+    <!-- Main Form -->
+    <form id="mainForm" class="space-y-8">
+      <!-- Quality Certificate -->
+      <div>
+        <label for="qualityCert" class="block text-lg font-medium text-gray-800">1. Quality Certificate Photo</label>
+        <div class="mt-2 flex items-center space-x-4">
+          <input id="qualityCert" type="file" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" onchange="showFileName('qualityCert', 'qualityCertPreview')">
+          <button type="button" onclick="captureImage('qualityCert')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-all-colors">
+            Click Image
+          </button>
+        </div>
+        <span id="qualityCertPreview" class="file-preview"></span>
+      </div>
+
+      <!-- Product Photo -->
+      <div>
+        <label for="productPhoto" class="block text-lg font-medium text-gray-800">2. Product Photo</label>
+        <div class="mt-2 flex items-center space-x-4">
+          <input id="productPhoto" type="file" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" onchange="showFileName('productPhoto', 'productPhotoPreview')">
+          <button type="button" onclick="captureImage('productPhoto')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-all-colors">
+            Click Image
+          </button>
+        </div>
+         <span id="productPhotoPreview" class="file-preview"></span>
+      </div>
+
+      <!-- Invoice PDF -->
+      <div>
+        <label for="invoicePdf" class="block text-lg font-medium text-gray-800">3. Invoice PDF</label>
+        <div class="mt-2">
+          <input id="invoicePdf" type="file" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="showFileName('invoicePdf', 'invoicePdfPreview')">
+        </div>
+        <span id="invoicePdfPreview" class="file-preview"></span>
+      </div>
+
+      <div class="pt-4">
+        <button id="uploadButton" type="button" onclick="uploadAndSave()" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-bold text-white bg-green-600 hover:bg-green-700 transition-all-colors disabled:opacity-50" disabled>
+          <span id="buttonText">Upload & Save</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Preview Section -->
+    <div id="previewSection" class="mt-10 hidden">
+      <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-inner">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Verify Extracted Data</h2>
+        <div id="dataPreviewContainer" class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300" id="dataPreview">
+            <tbody class="divide-y divide-gray-200 bg-white"></tbody>
+          </table>
+        </div>
+
+        <!-- Action buttons -->
+        <div id="actionButtons" class="mt-6 flex justify-end space-x-4">
+          <button id="updateBtn" type="button" onclick="updateData()" class="hidden inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all-colors">
+            Update
+          </button>
+          <button id="proceedBtn" type="button" onclick="resetApp()" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-600 hover:bg-gray-700 transition-all-colors">
+            Proceed to Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // This should point to your backend proxy API endpoint
+    const webhookUrl = "/api/upload"; 
+
+    document.getElementById('mainForm').addEventListener('change', () => {
+        const cert = document.getElementById('qualityCert').files.length > 0;
+        const photo = document.getElementById('productPhoto').files.length > 0;
+        const invoice = document.getElementById('invoicePdf').files.length > 0;
+        document.getElementById('uploadButton').disabled = !(cert && photo && invoice);
+    });
+
+    // Upload & Save
+    async function uploadAndSave() {
+      const uploadButton = document.getElementById('uploadButton');
+      const buttonText = document.getElementById('buttonText');
+      uploadButton.disabled = true;
+      buttonText.textContent = 'Uploading...';
+
+      const formData = new FormData();
+      formData.append("qualityCertificate", document.getElementById("qualityCert").files[0]);
+      formData.append("productPhoto", document.getElementById("productPhoto").files[0]);
+      formData.append("invoicePdf", document.getElementById("invoicePdf").files[0]);
+      formData.append("action", "uploadAndSave");
+
+      try {
+        const res = await fetch(webhookUrl, { method: "POST", body: formData });
+        if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`);
+        }
+        const data = await res.json();
+        
+        renderPreview(data);
+
+        document.getElementById("mainForm").classList.add("hidden");
+        document.getElementById("previewSection").classList.remove("hidden");
+
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Upload failed. Please check the console for details.");
+      } finally {
+        // Reset button state regardless of outcome
+        uploadButton.disabled = false;
+        buttonText.textContent = 'Upload & Save';
+      }
+    }
+
+    // Render extracted data in an editable table
+    function renderPreview(data) {
+      const tableBody = document.querySelector("#dataPreview tbody");
+      tableBody.innerHTML = "";
+      for (const key in data) {
+          let row = document.createElement("tr");
+
+          let keyCell = document.createElement("td");
+          keyCell.className = "px-4 py-3 text-sm font-medium text-gray-800";
+          keyCell.textContent = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()); // Format key for display
+          row.appendChild(keyCell);
+
+          let valueCell = document.createElement("td");
+          valueCell.className = "px-4 py-3 text-sm text-gray-600";
+          let input = document.createElement("input");
+          input.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500";
+          input.type = "text";
+          input.value = data[key] || "";
+          input.setAttribute("data-key", key);
+          valueCell.appendChild(input);
+          row.appendChild(valueCell);
+
+          tableBody.appendChild(row);
+      }
+      
+      // Listen for changes in the inputs to show the Update button
+      document.getElementById('dataPreviewContainer').addEventListener('input', () => {
+          document.getElementById('updateBtn').classList.remove('hidden');
+      });
+    }
+
+    // Collect verified/edited data from the table
+    function collectData() {
+      let inputs = document.querySelectorAll("#dataPreview input");
+      let verifiedData = {};
+      inputs.forEach(i => verifiedData[i.dataset.key] = i.value);
+      return verifiedData;
+    }
+
+    // Update the data
+    async function updateData() {
+      const updateButton = document.getElementById('updateBtn');
+      updateButton.textContent = "Updating...";
+      updateButton.disabled = true;
+
+      let verified = collectData();
+      verified.action = "update";
+      
+      try {
+          const res = await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(verified)
+          });
+          if (!res.ok) throw new Error("Update failed");
+          
+          alert("Data updated successfully!");
+          updateButton.classList.add('hidden'); // Hide after successful update
+
+      } catch(err) {
+          console.error("Error:", err);
+          alert("Update failed.");
+      } finally {
+          updateButton.textContent = "Update";
+          updateButton.disabled = false;
+      }
+    }
+
+    // Reset the application to its initial state
+    function resetApp() {
+      document.getElementById("mainForm").reset();
+      document.getElementById("previewSection").classList.add("hidden");
+      document.getElementById("mainForm").classList.remove("hidden");
+      document.getElementById('updateBtn').classList.add('hidden');
+      document.getElementById('uploadButton').disabled = true;
+
+      // Clear file previews
+      document.getElementById('qualityCertPreview').textContent = '';
+      document.getElementById('productPhotoPreview').textContent = '';
+      document.getElementById('invoicePdfPreview').textContent = '';
+    }
+    
+    // Shows the name of the selected file
+    function showFileName(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        if (input.files.length > 0) {
+            preview.textContent = `Selected: ${input.files[0].name}`;
+        } else {
+            preview.textContent = '';
+        }
+    }
+
+    // Use device camera to capture an image
+    function captureImage(targetInputId) {
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "environment"; // Use the rear camera
+      input.onchange = e => {
+          let targetInput = document.getElementById(targetInputId);
+          targetInput.files = e.target.files;
+          // Manually trigger change event to update UI
+          targetInput.dispatchEvent(new Event('change'));
+      };
+      input.click();
+    }
+  </script>
+</body>
 </html>

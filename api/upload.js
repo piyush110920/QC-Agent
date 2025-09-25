@@ -1,15 +1,17 @@
+// This file should be placed in your backend's API routes folder (e.g., /pages/api/upload.js for Next.js)
+
 export const config = {
   api: {
-    bodyParser: false, // Disable body parsing to handle file streams
+    bodyParser: false, // Important: This allows us to handle the raw request stream
   },
 };
 
 export default async function handler(req, res) {
   try {
-    // The target n8n webhook. Using HTTPS as required.
-    const n8nWebhookUrl = 'https://ai.senselive.io:5678/webhook-test/senselive-qc-agent';
+    // IMPORTANT: Replace this with your actual n8n webhook URL
+    const n8nWebhookUrl = 'YOUR_N8N_WEBHOOK_URL_HERE';
 
-    // 1. Manually read the incoming request body from the stream
+    // 1. Read the incoming request body from the stream
     const chunks = [];
     for await (const chunk of req) {
       chunks.push(chunk);
@@ -21,35 +23,21 @@ export default async function handler(req, res) {
 
     // Delete headers that can cause issues when proxying
     delete forwardedHeaders.host;
-    delete forwardedHeaders['content-length'];
-    delete forwardedHeaders['connection'];
+    delete forwardedHeaders['content-length']; // The length will be recalculated by fetch
 
-    // 3. Forward the request to n8n
-    const n8nResponse = await fetch(n8nWebhookUrl, {
+    // 3. Forward the complete request (with files) to your n8n webhook
+    const response = await fetch(n8nWebhookUrl, {
       method: req.method,
       headers: forwardedHeaders,
       body: body,
     });
 
-    // 4. Set CORS headers on the response going back to the browser
-    // This allows the browser to read the response from this API route
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Or your Vercel domain for more security
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // 4. Send the response from n8n back to the frontend client
+    const responseData = await response.arrayBuffer();
+    const contentType = response.headers.get('content-type');
 
-    // Handle preflight OPTIONS request for CORS
-    if (req.method === 'OPTIONS') {
-      return res.status(200).end();
-    }
-
-    // 5. Send the n8n response back to the client
-    const responseData = await n8nResponse.arrayBuffer();
-    const contentType = n8nResponse.headers.get('content-type');
-
-    if (contentType) {
-      res.setHeader('Content-Type', contentType);
-    }
-    res.status(n8nResponse.status).send(Buffer.from(responseData));
+    res.setHeader('Content-Type', contentType || 'application/octet-stream');
+    res.status(response.status).send(Buffer.from(responseData));
 
   } catch (error) {
     console.error('Proxy forwarding error:', error);
