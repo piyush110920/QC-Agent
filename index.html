@@ -19,7 +19,6 @@
 </head>
 <body class="bg-gray-50 p-6 min-h-screen flex items-center justify-center font-sans">
   <div class="max-w-4xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
-    <!-- Header -->
     <div class="text-center mb-10">
       <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 mb-2 drop-shadow-md tracking-tight">
         Product Data Hub
@@ -29,9 +28,7 @@
       </p>
     </div>
 
-    <!-- Main Form -->
     <form id="mainForm" class="space-y-8">
-      <!-- Quality Certificate -->
       <div>
         <label for="qualityCert" class="block text-lg font-medium text-gray-800">1. Quality Certificate Photo</label>
         <div class="mt-2 flex items-center space-x-4">
@@ -43,7 +40,6 @@
         <span id="qualityCertPreview" class="file-preview"></span>
       </div>
 
-      <!-- Product Photo -->
       <div>
         <label for="productPhoto" class="block text-lg font-medium text-gray-800">2. Product Photo</label>
         <div class="mt-2 flex items-center space-x-4">
@@ -55,7 +51,6 @@
          <span id="productPhotoPreview" class="file-preview"></span>
       </div>
 
-      <!-- Invoice PDF -->
       <div>
         <label for="invoicePdf" class="block text-lg font-medium text-gray-800">3. Invoice PDF</label>
         <div class="mt-2">
@@ -71,7 +66,6 @@
       </div>
     </form>
 
-    <!-- Preview Section -->
     <div id="previewSection" class="mt-10 hidden">
       <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-inner">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Verify Extracted Data</h2>
@@ -81,7 +75,6 @@
           </table>
         </div>
 
-        <!-- Action buttons -->
         <div id="actionButtons" class="mt-6 flex justify-end space-x-4">
           <button id="updateBtn" type="button" onclick="updateData()" class="hidden inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all-colors">
             Update
@@ -113,9 +106,11 @@
       buttonText.textContent = 'Uploading...';
 
       const formData = new FormData();
-      formData.append("QA", document.getElementById("qualityCert").files[0]);
-      formData.append("PD", document.getElementById("productPhoto").files[0]);
-      formData.append("IV", document.getElementById("invoicePdf").files[0]);
+      // --- CHANGES ARE HERE ---
+      formData.append("QA", document.getElementById("qualityCert").files[0]); // Changed to QA
+      formData.append("PD", document.getElementById("productPhoto").files[0]); // Changed to PD
+      formData.append("IV", document.getElementById("invoicePdf").files[0]);   // Changed to IV
+      // --- END OF CHANGES ---
       formData.append("action", "uploadSave");
 
       try {
