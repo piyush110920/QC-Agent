@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Data Uploader</title>
+  <title>Senselive Product Data Uploader</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .transition-all-colors {
@@ -21,7 +21,7 @@
   <div class="max-w-4xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
     <div class="text-center mb-10">
       <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 mb-2 drop-shadow-md tracking-tight">
-        Product Data Hub
+        SenseLive Data Hub
       </h1>
       <p class="text-xl sm:text-2xl font-semibold text-gray-600 mt-2">
         Upload & Verify Product Information
@@ -52,9 +52,12 @@
       </div>
 
       <div>
-        <label for="invoicePdf" class="block text-lg font-medium text-gray-800">3. Invoice PDF</label>
-        <div class="mt-2">
-          <input id="invoicePdf" type="file" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="showFileName('invoicePdf', 'invoicePdfPreview')">
+        <label for="invoicePdf" class="block text-lg font-medium text-gray-800">3. Invoice Document (PDF or Image)</label>
+        <div class="mt-2 flex items-center space-x-4">
+          <input id="invoicePdf" type="file" accept=".pdf,image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="showFileName('invoicePdf', 'invoicePdfPreview')">
+          <button type="button" onclick="captureImage('invoicePdf')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all-colors">
+            Click Image
+          </button>
         </div>
         <span id="invoicePdfPreview" class="file-preview"></span>
       </div>
@@ -191,8 +194,8 @@
           });
           if (!res.ok) throw new Error("Update failed");
           
-          alert("Data updated successfully!");
-          updateButton.classList.add('hidden'); // Hide after successful update
+          alert("Data updated successfully! The app will now reset.");
+          resetApp(); // Restart the app to the initial state
 
       } catch(err) {
           console.error("Error:", err);
