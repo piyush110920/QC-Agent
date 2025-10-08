@@ -3,379 +3,248 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SenseLive Warranty Check Up</title>
+  <title>Senselive Product Data Uploader</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom transition for a smoother experience */
-    .transition-all-enhanced {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .transition-all-colors {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
     }
-    /* Style for the file input dropzone to match new theme */
-    .file-dropzone {
-      border: 2px dashed #334155; /* border-slate-700 */
-      background-color: #0f172a; /* bg-slate-900 */
-    }
-    .file-dropzone:hover {
-      border-color: #22d3ee; /* hover:border-cyan-400 */
-      background-color: #1e293b; /* hover:bg-slate-800 */
-    }
-    /* Styling for the preview thumbnail for dark theme */
-    .thumbnail-preview {
-      width: 6rem; /* w-24 */
-      height: 6rem; /* h-24 */
-      object-fit: cover;
-      border-radius: 0.5rem; /* rounded-lg */
-      border: 1px solid #1e293b; /* border-slate-800 */
-    }
-    
-    /* Custom styles for making the preview table mobile-friendly */
-    @media (max-width: 767px) {
-      #dataPreview tr {
-        display: block;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-        border-bottom-width: 1px;
-        border-color: #334155; /* Corresponds to border-slate-700 */
-      }
-      #dataPreview tr:last-child {
-        border-bottom-width: 0;
-        margin-bottom: 0;
-      }
-      #dataPreview td {
-        display: block;
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
-      }
-       #dataPreview td:first-child {
-        padding-bottom: 0.5rem; /* Add space between label and input */
-      }
+    .file-preview {
+      display: inline-block;
+      margin-top: 8px;
+      font-style: italic;
+      color: #4a5568;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-[#0a0f1f] to-black p-4 sm:p-6 min-h-screen flex items-center justify-center font-sans">
-  
-  <!-- LOGIN SECTION (Initially visible) -->
-  <div id="loginSection" class="max-w-md w-full mx-auto">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400 drop-shadow-sm tracking-tight">
-        SenseLive Warranty Check Up
+<body class="bg-gray-50 p-6 min-h-screen flex items-center justify-center font-sans">
+  <div class="max-w-4xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+    <div class="text-center mb-10">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 mb-2 drop-shadow-md tracking-tight">
+        SenseLive Data Hub
       </h1>
-      <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-300 mt-4">Welcome Back</h2>
-      <p class="text-md text-slate-400 mt-2">Please login with your credentials to continue.</p>
+      <p class="text-xl sm:text-2xl font-semibold text-gray-600 mt-2">
+        Upload & Verify Product Information
+      </p>
     </div>
-    <div class="bg-slate-900/70 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-slate-800">
-      <form id="loginForm" class="space-y-6">
-        <div>
-          <label for="username" class="block text-sm font-medium text-slate-300">Username</label>
-          <div class="mt-1">
-            <input id="username" name="username" type="text" required class="w-full p-3 border bg-slate-800 border-slate-700 text-white rounded-md focus:ring-cyan-500 focus:border-cyan-500">
-          </div>
-        </div>
-        <div>
-          <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
-          <div class="mt-1 relative">
-            <input id="password" name="password" type="password" required class="w-full p-3 pr-10 border bg-slate-800 border-slate-700 text-white rounded-md focus:ring-cyan-500 focus:border-cyan-500">
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-200">
-              <svg id="eyeIcon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <svg id="eyeOffIcon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.243 4.243L6.228 6.228" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <p id="loginError" class="text-sm text-red-400 hidden">Invalid username or password. Please try again.</p>
-        <div>
-          <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced">
-            Login
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
- <div id="mainAppSection" class="max-w-4xl w-full mx-auto hidden">
-  <div class="text-center mb-8">
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400 drop-shadow-sm tracking-tight">
-      SenseLive Warranty Check Up
-    </h1>
-    <p class="text-lg sm:text-xl text-slate-300 mt-2">
-      Verify your product's warranty status by uploading the required documents.
-    </p>
-  </div>
-
-  <div class="bg-slate-900/70 backdrop-blur-sm p-6 sm:p-10 rounded-2xl shadow-xl border border-slate-800">
-    
-    <div id="errorDisplay" class="mb-4 text-red-400 font-semibold text-center bg-red-900/30 p-3 rounded-lg border border-red-700 hidden"></div>
 
     <form id="mainForm" class="space-y-8">
       <div>
-        <h2 class="text-xl font-bold text-slate-100 border-b border-slate-700 pb-2 mb-6">Step 1: Upload Documents</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div id="qualityCert-container"></div>
-          <div id="productPhoto-container"></div>
-          <div id="invoicePdf-container"></div>
+        <label for="qualityCert" class="block text-lg font-medium text-gray-800">1. Quality Certificate Photo</label>
+        <div class="mt-2 flex items-center space-x-4">
+          <input id="qualityCert" type="file" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" onchange="showFileName('qualityCert', 'qualityCertPreview')">
+          <button type="button" onclick="captureImage('qualityCert')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-all-colors">
+            Click Image
+          </button>
         </div>
+        <span id="qualityCertPreview" class="file-preview"></span>
       </div>
+
+      <div>
+        <label for="productPhoto" class="block text-lg font-medium text-gray-800">2. Product Photo</label>
+        <div class="mt-2 flex items-center space-x-4">
+          <input id="productPhoto" type="file" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" onchange="showFileName('productPhoto', 'productPhotoPreview')">
+          <button type="button" onclick="captureImage('productPhoto')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-all-colors">
+            Click Image
+          </button>
+        </div>
+         <span id="productPhotoPreview" class="file-preview"></span>
+      </div>
+
+      <div>
+        <label for="invoicePdf" class="block text-lg font-medium text-gray-800">3. Invoice Document (PDF or Image)</label>
+        <div class="mt-2 flex items-center space-x-4">
+          <input id="invoicePdf" type="file" accept=".pdf,image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="showFileName('invoicePdf', 'invoicePdfPreview')">
+          <button type="button" onclick="captureImage('invoicePdf')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all-colors">
+            Click Image
+          </button>
+        </div>
+        <span id="invoicePdfPreview" class="file-preview"></span>
+      </div>
+
       <div class="pt-4">
-        <button id="uploadButton" type="button" onclick="uploadAndSave()" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
-          <span id="buttonSpinner" class="hidden mr-3">
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </span>
-          <span id="buttonText">Upload & Verify</span>
+        <button id="uploadButton" type="button" onclick="uploadAndSave()" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-bold text-white bg-green-600 hover:bg-green-700 transition-all-colors disabled:opacity-50" disabled>
+          <span id="buttonText">Upload & Save</span>
         </button>
       </div>
     </form>
-    <div id="previewSection" class="hidden">
-      <h2 class="text-xl font-bold text-slate-100 border-b border-slate-700 pb-2 mb-6">Step 2: Review & Confirm Extracted Data</h2>
-      <p class="text-slate-400 mb-6">Please check the information extracted from your documents. You can edit any field before finalizing.</p>
-      <div id="dataPreviewContainer" class="overflow-hidden shadow ring-1 ring-white/10 md:rounded-lg">
-        <table class="min-w-full" id="dataPreview">
-          <tbody class="bg-slate-900"></tbody>
-        </table>
-      </div>
-      <div id="actionButtons" class="mt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-        <button id="resetBtn" type="button" onclick="resetApp()" class="inline-flex justify-center items-center px-6 py-3 border border-slate-600 text-base font-medium rounded-full shadow-sm text-slate-200 bg-slate-800 hover:bg-slate-700 transition-all-enhanced">
-          Start New Upload
-        </button>
-        <button id="updateBtn" type="button" onclick="updateData()" class="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced">
-          Save & Finalize
-        </button>
+
+    <div id="previewSection" class="mt-10 hidden">
+      <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-inner">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Verify Extracted Data</h2>
+        <div id="dataPreviewContainer" class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300" id="dataPreview">
+            <tbody class="divide-y divide-gray-200 bg-white"></tbody>
+          </table>
+        </div>
+
+        <div id="actionButtons" class="mt-6 flex justify-end space-x-4">
+          <button id="updateBtn" type="button" onclick="updateData()" class="hidden inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all-colors">
+            Update
+          </button>
+          <button id="proceedBtn" type="button" onclick="resetApp()" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-600 hover:bg-gray-700 transition-all-colors">
+            Proceed to Next
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  const webhookUrl = "/api/upload"; // This should point to your backend proxy API endpoint
+  <script>
+    // This should point to your backend proxy API endpoint
+    const webhookUrl = "/api/upload"; 
 
-  // --- LOGIN LOGIC ---
-  function handleLogin(event) {
-    event.preventDefault(); // Prevent form from reloading the page
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    const error = document.getElementById('loginError');
-
-    // Predefined credentials
-    if (user === 'Senselive' && pass === 'SenseLive@123') {
-      document.getElementById('loginSection').classList.add('hidden');
-      document.getElementById('mainAppSection').classList.remove('hidden');
-      error.classList.add('hidden');
-    } else {
-      error.classList.remove('hidden');
-    }
-  }
-
-  function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('password');
-    const eyeIcon = document.getElementById('eyeIcon');
-    const eyeOffIcon = document.getElementById('eyeOffIcon');
-
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      eyeIcon.classList.add('hidden');
-      eyeOffIcon.classList.remove('hidden');
-    } else {
-      passwordInput.type = 'password';
-      eyeIcon.classList.remove('hidden');
-      eyeOffIcon.classList.add('hidden');
-    }
-  }
-
-  // --- UI GENERATION ---
-  function createFileUploader(id, title, description, acceptedFiles) {
-    const container = document.getElementById(`${id}-container`);
-    container.innerHTML = `
-      <div class="text-center">
-        <label for="${id}" class="block text-sm font-medium text-slate-200 mb-1">${title}</label>
-        <p class="text-xs text-slate-400 mb-2 h-10">${description}</p>
-        <div id="${id}-dropzone" class="file-dropzone rounded-lg p-4 cursor-pointer transition-all-enhanced">
-          <div id="${id}-preview" class="flex flex-col items-center justify-center">
-            <svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-4-4V7a4 4 0 014-4h10a4 4 0 014 4v5a4 4 0 01-4 4H7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 9h.01"></path></svg>
-            <p class="text-xs text-slate-500 mt-2">Click to upload</p>
-          </div>
-          <input id="${id}" type="file" accept="${acceptedFiles}" class="hidden">
-        </div>
-        <div class="mt-2 flex justify-center space-x-2">
-            <button type="button" onclick="document.getElementById('${id}').click()" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300">Choose File</button>
-            <span class="text-slate-600">|</span>
-            <button type="button" onclick="captureImage('${id}')" class="text-xs font-semibold text-teal-400 hover:text-teal-300">Use Camera</button>
-        </div>
-      </div>
-    `;
-    const input = document.getElementById(id);
-    const dropzone = document.getElementById(`${id}-dropzone`);
-    input.addEventListener('change', () => updateFilePreview(id));
-    dropzone.addEventListener('click', () => input.click());
-  }
-
-  // --- CORE LOGIC ---
-  document.addEventListener('DOMContentLoaded', () => {
-    // Attach login form handler
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-    // Generate the three uploaders for the main app
-    createFileUploader('qualityCert', '1. Quality Certificate', 'Upload Quality Certificate of Buzz Bar or Temperature Sensor', 'image/*');
-    createFileUploader('productPhoto', '2. Product Photo', 'Upload photo of product from front', 'image/*');
-    createFileUploader('invoicePdf', '3. Invoice Document', 'Invoice of the product', '.pdf,image/*');
-    
-    document.getElementById('mainForm').addEventListener('change', checkFormCompletion);
-  });
-
-  function checkFormCompletion() {
-    const cert = document.getElementById('qualityCert').files.length > 0;
-    const photo = document.getElementById('productPhoto').files.length > 0;
-    const invoice = document.getElementById('invoicePdf').files.length > 0;
-    document.getElementById('uploadButton').disabled = !(cert && photo && invoice);
-  }
-
-async function uploadAndSave() {
-    const uploadButton = document.getElementById('uploadButton');
-    const buttonText = document.getElementById('buttonText');
-    const spinner = document.getElementById('buttonSpinner');
-    const errorDisplay = document.getElementById('errorDisplay'); // Get the error display div
-    
-    // Reset state
-    uploadButton.disabled = true;
-    buttonText.textContent = 'Uploading...';
-    spinner.classList.remove('hidden');
-    errorDisplay.classList.add('hidden'); // Hide previous errors
-    errorDisplay.textContent = '';
-
-    const formData = new FormData();
-    formData.append("QA", document.getElementById("qualityCert").files[0]);
-    formData.append("PD", document.getElementById("productPhoto").files[0]);
-    formData.append("IV", document.getElementById("invoicePdf").files[0]);
-    formData.append("action", "uploadSave");
-
-    try {
-      const res = await fetch(webhookUrl, { method: "POST", body: formData });
-      
-      // NEW: Better error checking. If the server responded with an error (like 404 or 500)
-      if (!res.ok) {
-        // Try to get a more detailed error message from the server response
-        const errorText = await res.text();
-        throw new Error(`Server responded with status ${res.status}. Message: ${errorText}`);
-      }
-      
-      const data = await res.json();
-      
-      renderPreview(data);
-      document.getElementById("mainForm").parentElement.classList.add("hidden");
-      document.getElementById("previewSection").classList.remove("hidden");
-
-    } catch (err) {
-      // NEW: Display the exact error on the page
-      console.error("Detailed Error:", err);
-      errorDisplay.innerHTML = `<strong>An error occurred:</strong><br>${err.message}`;
-      errorDisplay.classList.remove('hidden'); // Show the error display
-      
-    } finally {
-      uploadButton.disabled = false;
-      buttonText.textContent = 'Upload & Verify';
-      spinner.classList.add('hidden');
-      checkFormCompletion();
-    }
-  }
-
-  function renderPreview(data) {
-    const tableBody = document.querySelector("#dataPreview tbody");
-    tableBody.innerHTML = "";
-    Object.keys(data).forEach(key => {
-        let row = `
-            <tr class="hover:bg-slate-800/50">
-                <td class="px-4 py-3 text-sm font-medium text-slate-200 md:w-1/3">${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</td>
-                <td class="px-4 py-3 text-sm text-slate-600">
-                    <input type="text" data-key="${key}" value="${data[key] || ''}" class="w-full p-2 border bg-slate-800 border-slate-700 text-white rounded-md focus:ring-cyan-500 focus:border-cyan-500">
-                </td>
-            </tr>
-        `;
-        tableBody.insertAdjacentHTML('beforeend', row);
+    document.getElementById('mainForm').addEventListener('change', () => {
+        const cert = document.getElementById('qualityCert').files.length > 0;
+        const photo = document.getElementById('productPhoto').files.length > 0;
+        const invoice = document.getElementById('invoicePdf').files.length > 0;
+        document.getElementById('uploadButton').disabled = !(cert && photo && invoice);
     });
-  }
 
-  function collectData() {
-    const inputs = document.querySelectorAll("#dataPreview input");
-    const verifiedData = {};
-    inputs.forEach(i => verifiedData[i.dataset.key] = i.value);
-    return verifiedData;
-  }
+    // Upload & Save
+    async function uploadAndSave() {
+      const uploadButton = document.getElementById('uploadButton');
+      const buttonText = document.getElementById('buttonText');
+      uploadButton.disabled = true;
+      buttonText.textContent = 'Uploading...';
 
-  async function updateData() {
-    const updateButton = document.getElementById('updateBtn');
-    updateButton.textContent = "Saving...";
-    updateButton.disabled = true;
-    const verified = collectData();
-    verified.action = "update";
-    try {
-      const res = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(verified)
+      const formData = new FormData();
+      // --- CHANGES ARE HERE ---
+      formData.append("QA", document.getElementById("qualityCert").files[0]); // Changed to QA
+      formData.append("PD", document.getElementById("productPhoto").files[0]); // Changed to PD
+      formData.append("IV", document.getElementById("invoicePdf").files[0]);   // Changed to IV
+      // --- END OF CHANGES ---
+      formData.append("action", "uploadSave");
+
+      try {
+        const res = await fetch(webhookUrl, { method: "POST", body: formData });
+        if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`);
+        }
+        const data = await res.json();
+        
+        renderPreview(data);
+
+        document.getElementById("mainForm").classList.add("hidden");
+        document.getElementById("previewSection").classList.remove("hidden");
+
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Upload failed. Please check the console for details.");
+      } finally {
+        // Reset button state regardless of outcome
+        uploadButton.disabled = false;
+        buttonText.textContent = 'Upload & Save';
+      }
+    }
+
+    // Render extracted data in an editable table
+    function renderPreview(data) {
+      const tableBody = document.querySelector("#dataPreview tbody");
+      tableBody.innerHTML = "";
+      for (const key in data) {
+          let row = document.createElement("tr");
+
+          let keyCell = document.createElement("td");
+          keyCell.className = "px-4 py-3 text-sm font-medium text-gray-800";
+          keyCell.textContent = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()); // Format key for display
+          row.appendChild(keyCell);
+
+          let valueCell = document.createElement("td");
+          valueCell.className = "px-4 py-3 text-sm text-gray-600";
+          let input = document.createElement("input");
+          input.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500";
+          input.type = "text";
+          input.value = data[key] || "";
+          input.setAttribute("data-key", key);
+          valueCell.appendChild(input);
+          row.appendChild(valueCell);
+
+          tableBody.appendChild(row);
+      }
+      
+      // Listen for changes in the inputs to show the Update button
+      document.getElementById('dataPreviewContainer').addEventListener('input', () => {
+          document.getElementById('updateBtn').classList.remove('hidden');
       });
-      if (!res.ok) throw new Error("Update failed");
-      alert("Data updated successfully!");
-      resetApp();
-    } catch(err) {
-      console.error("Error:", err);
-      alert("Update failed.");
-    } finally {
-      updateButton.textContent = "Save & Finalize";
-      updateButton.disabled = false;
     }
-  }
 
-  function resetApp() {
-    document.getElementById("mainForm").reset();
-    document.getElementById("mainForm").parentElement.classList.remove("hidden");
-    document.getElementById("previewSection").classList.add("hidden");
-    createFileUploader('qualityCert', '1. Quality Certificate', 'Upload Quality Certificate of Buzz Bar or Temperature Sensor', 'image/*');
-    createFileUploader('productPhoto', '2. Product Photo', 'Upload photo of product from front', 'image/*');
-    createFileUploader('invoicePdf', '3. Invoice Document', 'Invoice of the product', '.pdf,image/*');
-    checkFormCompletion();
-  }
+    // Collect verified/edited data from the table
+    function collectData() {
+      let inputs = document.querySelectorAll("#dataPreview input");
+      let verifiedData = {};
+      inputs.forEach(i => verifiedData[i.dataset.key] = i.value);
+      return verifiedData;
+    }
 
-  function updateFilePreview(inputId) {
-    const input = document.getElementById(inputId);
-    const previewContainer = document.getElementById(`${inputId}-preview`);
-    const file = input.files[0];
-    if (file) {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          previewContainer.innerHTML = `<img src="${e.target.result}" class="thumbnail-preview" alt="Image preview">`;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        previewContainer.innerHTML = `
-          <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <p class="text-xs text-slate-500 mt-2 truncate max-w-full px-2">${file.name}</p>
-        `;
+    // Update the data
+    async function updateData() {
+      const updateButton = document.getElementById('updateBtn');
+      updateButton.textContent = "Updating...";
+      updateButton.disabled = true;
+
+      let verified = collectData();
+      verified.action = "update";
+      
+      try {
+          const res = await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(verified)
+          });
+          if (!res.ok) throw new Error("Update failed");
+          
+          alert("Data updated successfully! The app will now reset.");
+          resetApp(); // Restart the app to the initial state
+
+      } catch(err) {
+          console.error("Error:", err);
+          alert("Update failed.");
+      } finally {
+          updateButton.textContent = "Update";
+          updateButton.disabled = false;
       }
     }
-    checkFormCompletion();
-  }
 
-  function captureImage(targetInputId) {
-    const captureInput = document.createElement("input");
-    captureInput.type = "file";
-    captureInput.accept = "image/*";
-    captureInput.capture = "environment";
-    captureInput.onchange = e => {
-      const targetInput = document.getElementById(targetInputId);
-      if (e.target.files.length > 0) {
-        targetInput.files = e.target.files;
-        updateFilePreview(targetInputId);
-      }
-    };
-    captureInput.click();
-  }
-</script>
+    // Reset the application to its initial state
+    function resetApp() {
+      document.getElementById("mainForm").reset();
+      document.getElementById("previewSection").classList.add("hidden");
+      document.getElementById("mainForm").classList.remove("hidden");
+      document.getElementById('updateBtn').classList.add('hidden');
+      document.getElementById('uploadButton').disabled = true;
+
+      // Clear file previews
+      document.getElementById('qualityCertPreview').textContent = '';
+      document.getElementById('productPhotoPreview').textContent = '';
+      document.getElementById('invoicePdfPreview').textContent = '';
+    }
+    
+    // Shows the name of the selected file
+    function showFileName(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        if (input.files.length > 0) {
+            preview.textContent = `Selected: ${input.files[0].name}`;
+        } else {
+            preview.textContent = '';
+        }
+    }
+
+    // Use device camera to capture an image
+    function captureImage(targetInputId) {
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "environment"; // Use the rear camera
+      input.onchange = e => {
+          let targetInput = document.getElementById(targetInputId);
+          targetInput.files = e.target.files;
+          // Manually trigger change event to update UI
+          targetInput.dispatchEvent(new Event('change'));
+      };
+      input.click();
+    }
+  </script>
 </body>
 </html>
-
