@@ -248,12 +248,9 @@
       const res = await fetch(webhookUrl, { method: "POST", body: formData });
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
       const data = await res.json();
-      
       renderPreview(data);
-
-      document.getElementById("mainForm").classList.add("hidden");
+      document.getElementById("mainForm").parentElement.classList.add("hidden"); // Hide the form's container
       document.getElementById("previewSection").classList.remove("hidden");
-
     } catch (err) {
       console.error("Error:", err);
       alert("Upload failed. Please check the console for details.");
@@ -314,7 +311,7 @@
 
   function resetApp() {
     document.getElementById("mainForm").reset();
-    document.getElementById("mainForm").classList.remove("hidden");
+    document.getElementById("mainForm").parentElement.classList.remove("hidden");
     document.getElementById("previewSection").classList.add("hidden");
     createFileUploader('qualityCert', '1. Quality Certificate', 'Upload Quality Certificate of Buzz Bar or Temperature Sensor', 'image/*');
     createFileUploader('productPhoto', '2. Product Photo', 'Upload photo of product from front', 'image/*');
@@ -360,6 +357,4 @@
 </script>
 </body>
 </html>
-
-
 
