@@ -96,7 +96,60 @@
     </div>
   </div>
 
+ <div id="mainAppSection" class="max-w-4xl w-full mx-auto hidden">
+  <div class="text-center mb-8">
+    <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400 drop-shadow-sm tracking-tight">
+      SenseLive Warranty Check Up
+    </h1>
+    <p class="text-lg sm:text-xl text-slate-300 mt-2">
+      Verify your product's warranty status by uploading the required documents.
+    </p>
+  </div>
 
+  <div class="bg-slate-900/70 backdrop-blur-sm p-6 sm:p-10 rounded-2xl shadow-xl border border-slate-800">
+    
+    <div id="errorDisplay" class="mb-4 text-red-400 font-semibold text-center bg-red-900/30 p-3 rounded-lg border border-red-700 hidden"></div>
+
+    <form id="mainForm" class="space-y-8">
+      <div>
+        <h2 class="text-xl font-bold text-slate-100 border-b border-slate-700 pb-2 mb-6">Step 1: Upload Documents</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div id="qualityCert-container"></div>
+          <div id="productPhoto-container"></div>
+          <div id="invoicePdf-container"></div>
+        </div>
+      </div>
+      <div class="pt-4">
+        <button id="uploadButton" type="button" onclick="uploadAndSave()" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
+          <span id="buttonSpinner" class="hidden mr-3">
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </span>
+          <span id="buttonText">Upload & Verify</span>
+        </button>
+      </div>
+    </form>
+    <div id="previewSection" class="hidden">
+      <h2 class="text-xl font-bold text-slate-100 border-b border-slate-700 pb-2 mb-6">Step 2: Review & Confirm Extracted Data</h2>
+      <p class="text-slate-400 mb-6">Please check the information extracted from your documents. You can edit any field before finalizing.</p>
+      <div id="dataPreviewContainer" class="overflow-hidden shadow ring-1 ring-white/10 md:rounded-lg">
+        <table class="min-w-full" id="dataPreview">
+          <tbody class="bg-slate-900"></tbody>
+        </table>
+      </div>
+      <div id="actionButtons" class="mt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
+        <button id="resetBtn" type="button" onclick="resetApp()" class="inline-flex justify-center items-center px-6 py-3 border border-slate-600 text-base font-medium rounded-full shadow-sm text-slate-200 bg-slate-800 hover:bg-slate-700 transition-all-enhanced">
+          Start New Upload
+        </button>
+        <button id="updateBtn" type="button" onclick="updateData()" class="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced">
+          Save & Finalize
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   const webhookUrl = "/api/upload"; // This should point to your backend proxy API endpoint
