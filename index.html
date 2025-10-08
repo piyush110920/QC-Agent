@@ -25,7 +25,39 @@
 </head>
 <body class="bg-gradient-to-b from-slate-900 to-[#0c1e35] p-4 sm:p-6 min-h-screen flex items-center justify-center font-sans text-slate-300">
   <div class="max-w-6xl w-full mx-auto">
-    <div id="mainFormContainer">
+    <!-- Login Section -->
+    <div id="loginSection">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400 mb-2 drop-shadow-md tracking-tight">
+              SenseLive Warranty Check Agent
+            </h1>
+        </div>
+        <div class="max-w-md mx-auto bg-slate-800/50 p-8 rounded-2xl border border-slate-700">
+            <h2 class="text-2xl font-bold text-center text-slate-100 mb-6">Login</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-slate-300">Username</label>
+                    <div class="mt-1">
+                        <input id="username" name="username" type="text" required class="w-full p-3 border border-slate-600 rounded-md bg-slate-700 text-slate-100 focus:ring-cyan-500 focus:border-cyan-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
+                    <div class="mt-1">
+                        <input id="password" name="password" type="password" required class="w-full p-3 border border-slate-600 rounded-md bg-slate-700 text-slate-100 focus:ring-cyan-500 focus:border-cyan-500">
+                    </div>
+                </div>
+                 <p id="loginError" class="text-red-400 text-sm text-center hidden">Invalid username or password.</p>
+                <div>
+                    <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all-colors focus:outline-none focus:ring-4 focus:ring-cyan-500/50 transform hover:scale-[1.02]">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="mainFormContainer" class="hidden">
         <div class="text-center mb-10">
             <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400 mb-2 drop-shadow-md tracking-tight">
               SenseLive Warranty Check Agent
@@ -124,6 +156,22 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
         <span class="text-slate-500">Click to upload</span>
     `;
+
+    // Login function
+    function handleLogin(event) {
+        event.preventDefault(); // Prevent form from reloading the page
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('loginError');
+
+        if (username === 'Senselive' && password === 'SenseLive@123') {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainFormContainer').classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+        } else {
+            errorMsg.classList.remove('hidden');
+        }
+    }
 
     document.getElementById('mainForm').addEventListener('change', () => {
         const cert = document.getElementById('qualityCert').files.length > 0;
