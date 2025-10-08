@@ -15,6 +15,11 @@
       font-style: italic;
       color: #94a3b8; /* Lighter slate color */
       height: 1.5rem; /* Reserve space to prevent layout shift */
+      /* Truncate long file names */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
   </style>
 </head>
@@ -35,8 +40,8 @@
         <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex flex-col text-center">
             <h3 class="text-xl font-semibold text-slate-100">1. Quality Certificate</h3>
             <p class="text-sm text-slate-400 mb-4 h-10">Upload certificate of Buzz Bar or Temp Sensor</p>
-            <input id="qualityCert" type="file" accept="image/*" class="hidden" onchange="showFileName('qualityCert', 'qualityCertPreview')">
-            <label for="qualityCert" class="flex flex-col items-center justify-center flex-grow w-full border-2 border-slate-600 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-all-colors">
+            <input id="qualityCert" type="file" accept="image/*" class="hidden" onchange="showFilePreview('qualityCert', 'qualityCertLabel', 'qualityCertPreview')">
+            <label id="qualityCertLabel" for="qualityCert" class="flex flex-col items-center justify-center flex-grow w-full border-2 border-slate-600 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-all-colors relative overflow-hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 <span class="text-slate-500">Click to upload</span>
             </label>
@@ -52,8 +57,8 @@
         <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex flex-col text-center">
             <h3 class="text-xl font-semibold text-slate-100">2. Product Photo</h3>
             <p class="text-sm text-slate-400 mb-4 h-10">Upload a photo of the product from the front</p>
-            <input id="productPhoto" type="file" accept="image/*" class="hidden" onchange="showFileName('productPhoto', 'productPhotoPreview')">
-            <label for="productPhoto" class="flex flex-col items-center justify-center flex-grow w-full border-2 border-slate-600 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-all-colors">
+            <input id="productPhoto" type="file" accept="image/*" class="hidden" onchange="showFilePreview('productPhoto', 'productPhotoLabel', 'productPhotoPreview')">
+            <label id="productPhotoLabel" for="productPhoto" class="flex flex-col items-center justify-center flex-grow w-full border-2 border-slate-600 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-all-colors relative overflow-hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 <span class="text-slate-500">Click to upload</span>
             </label>
@@ -69,8 +74,8 @@
         <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 flex flex-col text-center">
             <h3 class="text-xl font-semibold text-slate-100">3. Invoice Document</h3>
             <p class="text-sm text-slate-400 mb-4 h-10">Upload the invoice for the product (PDF/Image)</p>
-            <input id="invoicePdf" type="file" accept=".pdf,image/*" class="hidden" onchange="showFileName('invoicePdf', 'invoicePdfPreview')">
-             <label for="invoicePdf" class="flex flex-col items-center justify-center flex-grow w-full border-2 border-slate-600 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-all-colors">
+            <input id="invoicePdf" type="file" accept=".pdf,image/*" class="hidden" onchange="showFilePreview('invoicePdf', 'invoicePdfLabel', 'invoicePdfPreview')">
+             <label id="invoicePdfLabel" for="invoicePdf" class="flex flex-col items-center justify-center flex-grow w-full border-2 border-slate-600 border-dashed rounded-lg cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-all-colors relative overflow-hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 <span class="text-slate-500">Click to upload</span>
             </label>
@@ -114,6 +119,11 @@
   <script>
     // This should point to your backend proxy API endpoint
     const webhookUrl = "/api/upload"; 
+
+    const originalLabelContent = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+        <span class="text-slate-500">Click to upload</span>
+    `;
 
     document.getElementById('mainForm').addEventListener('change', () => {
         const cert = document.getElementById('qualityCert').files.length > 0;
@@ -239,18 +249,45 @@
       document.getElementById('qualityCertPreview').textContent = '';
       document.getElementById('productPhotoPreview').textContent = '';
       document.getElementById('invoicePdfPreview').textContent = '';
+      
+      // Restore original label content
+      document.getElementById('qualityCertLabel').innerHTML = originalLabelContent;
+      document.getElementById('productPhotoLabel').innerHTML = originalLabelContent;
+      document.getElementById('invoicePdfLabel').innerHTML = originalLabelContent;
     }
     
-    // Shows the name of the selected file
-    function showFileName(inputId, previewId) {
+    // Shows a preview of the selected file
+    function showFilePreview(inputId, labelId, previewId) {
         const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
-        if (input.files.length > 0) {
-            preview.textContent = `Selected: ${input.files[0].name}`;
+        const label = document.getElementById(labelId);
+        const fileNamePreview = document.getElementById(previewId);
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            fileNamePreview.textContent = `Selected: ${file.name}`;
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    label.innerHTML = `<img src="${e.target.result}" alt="Image preview" class="w-full h-full object-cover absolute inset-0 rounded-lg" />`;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                 // For non-image files like PDF, show an icon and file name
+                label.innerHTML = `
+                    <div class="flex flex-col items-center justify-center text-slate-500 p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="text-sm break-all">${file.name}</span>
+                    </div>`;
+            }
         } else {
-            preview.textContent = '';
+            fileNamePreview.textContent = '';
+            label.innerHTML = originalLabelContent;
         }
     }
+
 
     // Use device camera to capture an image
     function captureImage(targetInputId) {
@@ -261,8 +298,8 @@
       input.onchange = e => {
           let targetInput = document.getElementById(targetInputId);
           targetInput.files = e.target.files;
-          // Manually trigger change event to update UI
-          targetInput.dispatchEvent(new Event('change'));
+          // Manually trigger change event to update UI and show preview
+          targetInput.dispatchEvent(new Event('change', { 'bubbles': true }));
       };
       input.click();
     }
