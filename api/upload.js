@@ -1,46 +1,28 @@
-// This file should be placed in your backend's API routes folder (e.g., /pages/api/upload.js for Next.js)
+import httpProxy from 'http-proxy';
+
+// IMPORTANT: Replace this with your actual n8n webhook URL
+const N8N_WEBHOOK_URL = 'https://ai.senselive.io/webhook-test/senselive-qc-agent';
+
+const proxy = httpProxy.createProxyServer();
 
 export const config = {
   api: {
-    bodyParser: false, // Important: This allows us to handle the raw request stream
+    bodyParser: false, // Disable Next.js's body parser to allow the proxy to stream the request
   },
 };
 
 export default async function handler(req, res) {
-  try {
-    // IMPORTANT: Replace this with your actual n8n webhook URL
-    const n8nWebhookUrl = 'https://ai.senselive.io/webhook-test/senselive-qc-agent';
-
-    // 1. Read the incoming request body from the stream
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
-    }
-    const body = Buffer.concat(chunks);
-
-    // 2. Prepare headers for the forwarded request
-    const forwardedHeaders = { ...req.headers };
-
-    // Delete headers that can cause issues when proxying
-    delete forwardedHeaders.host;
-    delete forwardedHeaders['content-length']; // The length will be recalculated by fetch
-
-    // 3. Forward the complete request (with files) to your n8n webhook
-    const response = await fetch(n8nWebhookUrl, {
-      method: req.method,
-      headers: forwardedHeaders,
-      body: body,
+  // Wrap the proxy in a promise to handle potential errors
+  return new Promise((resolve, reject) => {
+    // The proxy will stream the request body and headers to the target URL
+    proxy.web(req, res, {
+      target: N8N_WEBHOOK_URL,
+      changeOrigin: true, // Important for Vercel/hosting environments
+      selfHandleResponse: false, // Let the proxy handle the response streaming back to the client
+    }, (err) => {
+      console.error('Proxy error:', err);
+      res.status(500).json({ error: 'Proxy request failed' });
+      reject(err);
     });
-
-    // 4. Send the response from n8n back to the frontend client
-    const responseData = await response.arrayBuffer();
-    const contentType = response.headers.get('content-type');
-
-    res.setHeader('Content-Type', contentType || 'application/octet-stream');
-    res.status(response.status).send(Buffer.from(responseData));
-
-  } catch (error) {
-    console.error('Proxy forwarding error:', error);
-    res.status(500).json({ error: 'Proxy request failed', details: error.message });
-  }
+  });
 }
