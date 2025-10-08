@@ -54,7 +54,6 @@
 </head>
 <body class="bg-gradient-to-br from-[#0a0f1f] to-black p-4 sm:p-6 min-h-screen flex items-center justify-center font-sans">
   
-  <!-- LOGIN SECTION (Initially visible) -->
   <div id="loginSection" class="max-w-md w-full mx-auto">
     <div class="text-center mb-8">
       <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400 drop-shadow-sm tracking-tight">
@@ -96,7 +95,6 @@
     </div>
   </div>
 
-  <!-- MAIN APP SECTION (Initially hidden) -->
   <div id="mainAppSection" class="max-w-4xl w-full mx-auto hidden">
     <div class="text-center mb-8">
       <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-400 drop-shadow-sm tracking-tight">
@@ -118,7 +116,7 @@
           </div>
         </div>
         <div class="pt-4">
-          <button id="uploadButton" type="button" onclick="uploadAndSave()" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
+          <button id="uploadButton" type="button" onclick="uploadAndSave()" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-teal-500 hover:bg-teal-600 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed" disabled>
             <span id="buttonSpinner" class="hidden mr-3">
               <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -210,6 +208,16 @@
     const dropzone = document.getElementById(`${id}-dropzone`);
     input.addEventListener('change', () => updateFilePreview(id));
     dropzone.addEventListener('click', () => input.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-cyan-400', 'bg-slate-800'); });
+    dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-cyan-400', 'bg-slate-800'); });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-cyan-400', 'bg-slate-800');
+        if (e.dataTransfer.files.length) {
+            input.files = e.dataTransfer.files;
+            updateFilePreview(id);
+        }
+    });
   }
 
   // --- CORE LOGIC ---
@@ -239,18 +247,23 @@
     uploadButton.disabled = true;
     buttonText.textContent = 'Uploading...';
     spinner.classList.remove('hidden');
+    
     const formData = new FormData();
+    // --- MODIFICATION: Using keys QA, PD, IV as requested ---
     formData.append("QA", document.getElementById("qualityCert").files[0]);
     formData.append("PD", document.getElementById("productPhoto").files[0]);
     formData.append("IV", document.getElementById("invoicePdf").files[0]);
     formData.append("action", "uploadSave");
+
     try {
       const res = await fetch(webhookUrl, { method: "POST", body: formData });
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
       const data = await res.json();
+      
       renderPreview(data);
       document.getElementById("mainForm").parentElement.classList.add("hidden"); // Hide the form's container
       document.getElementById("previewSection").classList.remove("hidden");
+
     } catch (err) {
       console.error("Error:", err);
       alert("Upload failed. Please check the console for details.");
@@ -289,8 +302,10 @@
     const updateButton = document.getElementById('updateBtn');
     updateButton.textContent = "Saving...";
     updateButton.disabled = true;
+    
     const verified = collectData();
     verified.action = "update";
+    
     try {
       const res = await fetch(webhookUrl, {
         method: "POST",
@@ -298,8 +313,10 @@
         body: JSON.stringify(verified)
       });
       if (!res.ok) throw new Error("Update failed");
+      
       alert("Data updated successfully!");
       resetApp();
+
     } catch(err) {
       console.error("Error:", err);
       alert("Update failed.");
@@ -313,6 +330,7 @@
     document.getElementById("mainForm").reset();
     document.getElementById("mainForm").parentElement.classList.remove("hidden");
     document.getElementById("previewSection").classList.add("hidden");
+    // Re-create the uploaders to clear the file previews
     createFileUploader('qualityCert', '1. Quality Certificate', 'Upload Quality Certificate of Buzz Bar or Temperature Sensor', 'image/*');
     createFileUploader('productPhoto', '2. Product Photo', 'Upload photo of product from front', 'image/*');
     createFileUploader('invoicePdf', '3. Invoice Document', 'Invoice of the product', '.pdf,image/*');
@@ -344,12 +362,17 @@
     const captureInput = document.createElement("input");
     captureInput.type = "file";
     captureInput.accept = "image/*";
-    captureInput.capture = "environment";
+    captureInput.capture = "environment"; // Use rear camera
     captureInput.onchange = e => {
       const targetInput = document.getElementById(targetInputId);
       if (e.target.files.length > 0) {
-        targetInput.files = e.target.files;
-        updateFilePreview(targetInputId);
+        // Create a new FileList object to assign to the input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(e.target.files[0]);
+        targetInput.files = dataTransfer.files;
+        
+        // Manually dispatch change event
+        targetInput.dispatchEvent(new Event('change', { 'bubbles': true }));
       }
     };
     captureInput.click();
@@ -357,4 +380,3 @@
 </script>
 </body>
 </html>
-
