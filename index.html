@@ -234,28 +234,47 @@
     document.getElementById('uploadButton').disabled = !(cert && photo && invoice);
   }
 
-  async function uploadAndSave() {
+async function uploadAndSave() {
     const uploadButton = document.getElementById('uploadButton');
     const buttonText = document.getElementById('buttonText');
     const spinner = document.getElementById('buttonSpinner');
+    const errorDisplay = document.getElementById('errorDisplay'); // Get the error display div
+    
+    // Reset state
     uploadButton.disabled = true;
     buttonText.textContent = 'Uploading...';
     spinner.classList.remove('hidden');
+    errorDisplay.classList.add('hidden'); // Hide previous errors
+    errorDisplay.textContent = '';
+
     const formData = new FormData();
     formData.append("QA", document.getElementById("qualityCert").files[0]);
     formData.append("PD", document.getElementById("productPhoto").files[0]);
     formData.append("IV", document.getElementById("invoicePdf").files[0]);
     formData.append("action", "uploadSave");
+
     try {
       const res = await fetch(webhookUrl, { method: "POST", body: formData });
-      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+      
+      // NEW: Better error checking. If the server responded with an error (like 404 or 500)
+      if (!res.ok) {
+        // Try to get a more detailed error message from the server response
+        const errorText = await res.text();
+        throw new Error(`Server responded with status ${res.status}. Message: ${errorText}`);
+      }
+      
       const data = await res.json();
+      
       renderPreview(data);
-      document.getElementById("mainForm").parentElement.classList.add("hidden"); // Hide the form's container
+      document.getElementById("mainForm").parentElement.classList.add("hidden");
       document.getElementById("previewSection").classList.remove("hidden");
+
     } catch (err) {
-      console.error("Error:", err);
-      alert("Upload failed. Please check the console for details.");
+      // NEW: Display the exact error on the page
+      console.error("Detailed Error:", err);
+      errorDisplay.innerHTML = `<strong>An error occurred:</strong><br>${err.message}`;
+      errorDisplay.classList.remove('hidden'); // Show the error display
+      
     } finally {
       uploadButton.disabled = false;
       buttonText.textContent = 'Upload & Verify';
